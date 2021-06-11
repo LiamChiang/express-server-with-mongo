@@ -1,0 +1,26 @@
+{
+  "name": "web-server-app",
+  "version": "1.0.0",
+  "description": "interview test for building the web server app with auth token",
+  "main": "index.js",
+  "scripts": {
+    "start": "start",
+    "test": "test",
+    "import": "",
+    "dev": "cross-env NODE_ENV=environment nodemon index.js",
+    "start_db": "cd mongo_db && sh start_mongod.sh"
+  },
+  "author": "Liam Chiang",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.12.13",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.7"
+  }
+}
