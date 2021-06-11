@@ -1,9 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const collection = process.env.MONGO_USERS_COLLECTION;
 
-const environment = process.env.NODE_ENV
-const stage = require('../config')[environment];
+const stage = process.env.NODE_ENV
 
 const Schema = mongoose.Schema;
 
@@ -12,7 +10,8 @@ const userSchema = new Schema({
         type: 'String',
         required: true,
         trim: true,
-        unique: true
+        unique: true,
+        dropDups: true
     },
     password: {
         type: 'String',
@@ -21,18 +20,41 @@ const userSchema = new Schema({
     }
 });
 
-const User = mongoose.model(collection, userSchema);
-User.save(function (next) {
-    bcrypt.hash(this.password, 5, function(err, hash) {
+userSchema.pre('save', function(next) {
+    const user = this;
+    if (!user.isModified('password')) {
+        return next();
+    }
+    // use bcrypt hash the password
+    bcrypt.genSalt(stage.SALT_WORK_FACTOR, function(err, salt) {
         if (err) {
-            next(err);
-        } else {
-            console.log('hash: ', hash);
-            this.password = hash;
-            console.log('this.password: ', this.password);
-            next();
+            return next(err);
         }
-  });
+        // hash the password using our new salt
+        bcrypt.hash(user.password, salt, function(err, hash) {
+            if (err) {
+                return next(err);
+            }
+            // override the cleartext password with the hashed one
+            user.password = hash;
+            next();
+        });
+    });
 });
 
-module.exports = mongoose.model('User', userSchema);
+userSchema.statics = {
+    verifyPassword: (input, password) => {
+        return new Promise((resolve, reject) => {
+            bcrypt.compare(input, password)
+                .then(match => {
+                    resolve(match);
+                        
+                })
+                .catch(err => {
+                    reject(err);
+                });
+        })
+    }
+}
+
+module.exports = mongoose.model('Users', userSchema);

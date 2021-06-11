@@ -1,8 +1,8 @@
-// const products = require('./products');
+const products = require('./products');
 const user = require('./user');
 
 module.exports = (router) => {
-    // products(router);
+    products(router);
     user(router);
     return router;
 }

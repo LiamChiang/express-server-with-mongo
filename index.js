@@ -1,6 +1,15 @@
 //load the .env config file
 require('dotenv').config();
 
+//load the mongoose to connect to mongoDB
+const mongoose = require("mongoose");
+
+// load the requried mongoDN connect url
+const connUri = process.env.MONGO_URL;
+const mongoPort = process.env.MONGO_PORT;
+const db = process.env.MONGO_DB;
+const url = `${connUri}:${mongoPort}/${db}`;
+
 //load all required package
 const express = require('express');
 const logger = require('morgan');
@@ -29,14 +38,16 @@ app.use(logger(function (tokens, req, res) {
     ].join(' ')
 }));
 
-// Simple return for base api
-// app.use('/v1', (req, res, next) => {
-//     res.send('Welcome to test the Web App \n');
-//     next();
-// });
-
 // start implement the routes of the endpoint
 app.use('/v1', routes(router));
+
+// connecting to the mongoDB
+mongoose.connect(url, { useNewUrlParser: true, useCreateIndex: true, autoIndex: true }, (err) => {
+    if (err) {
+        console.log('Unable to connect to mongo!');
+        throw err;
+    }
+}); 
 
 // Listening the specified port with localhost
 app.listen(port, () => {

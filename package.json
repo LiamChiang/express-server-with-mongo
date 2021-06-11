@@ -4,7 +4,7 @@
   "description": "interview test for building the web server app with auth token",
   "main": "index.js",
   "scripts": {
-    "start": "start",
+    "start": "npm run dev",
     "test": "test",
     "import": "",
     "dev": "cross-env NODE_ENV=environment nodemon index.js",
