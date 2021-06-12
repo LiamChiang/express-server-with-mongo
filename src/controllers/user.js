@@ -1,16 +1,29 @@
-const mongoose = require("mongoose");
+const ObjectId = require('mongodb').ObjectId;
 const Users = require("../models/user");
-const bcrypt = require("bcrypt");
 const utils = require('../utils');
 const generateAccessToken = utils.generateAccessToken;
-const validateToken = utils.validateToken;
-
-const connUri = process.env.MONGO_URL;
-const mongoPort = process.env.MONGO_PORT;
-const db = process.env.MONGO_DB;
 
 module.exports = {
-  add: async (req, res) => {
+  findByAccount: async(req, res) => {
+    const { account } = req.params;
+    let result = {};
+    let status = 200;
+    try {
+        const returnedRes = await Users.findOne({ account: account }).exec();
+        if (returnedRes) {
+            result.status = status;
+            result.result = returnedRes;
+            res.status(status).send(result);
+        }
+    }
+    catch(err) {
+        status = 500;
+        result.status = status;
+        result.error = err;
+        res.status(status).send(result);
+    }
+  },
+  register: async (req, res) => {
     let result = {};
     let status = 200;
     try {
@@ -34,6 +47,7 @@ module.exports = {
                 result.token = jwtToken;
             }
             else {
+                console.log('testing');
                 status = 500;
                 result.status = status;
                 result.error = 'Unable to create the new user';
@@ -65,7 +79,7 @@ module.exports = {
             if (isMatch) {
                 const jwtToken = generateAccessToken({account: returnedRes.account, password: returnedRes.password});
                 result.status = status;
-                result.result = `Successfully registered the account: ${returnedRes.account}. The token will be expired after a day`;
+                result.result = `Successfully log into the account: ${returnedRes.account}. The token will be expired after a day`;
                 result.token = jwtToken;
             }
             else {
@@ -83,4 +97,38 @@ module.exports = {
         res.status(status).send(result);
     }
   },
+  deleteByAccount: async(req, res) => {
+    const { account } = req.params;
+    let result = {};
+    let status = 200;
+    try {
+        const findUser = await Users.findOne({ account: account }).exec();
+        if (findUser) {
+            const returnedRes = await Users.deleteOne({ _id:  new ObjectId(findUser._id) });
+            if (returnedRes) {
+                result.status = status;
+                result.result = 'Successfully delete the account';
+                res.status(status).send(result);
+            }
+            else {
+                status = 500;
+                result.status = status;
+                result.result = 'Unable to delete the user account';
+                res.status(status).send(result);
+            }
+        }
+        else {
+            status = 500;
+            result.status = status;
+            result.error = 'Unable to delete the non-exist user account';
+            res.status(status).send(result);
+        }
+    }
+    catch(err) {
+        status = 500;
+        result.status = status;
+        result.error = err;
+        res.status(status).send(result);
+    }
+  }
 };

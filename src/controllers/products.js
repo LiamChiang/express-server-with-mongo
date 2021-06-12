@@ -8,16 +8,21 @@ controller = {
         let result = {};
         let status = 200;
         try {
-            const returnedRes = await Products.find({ code: code }).exec();
+            const returnedRes = await Products.findOne({ code: code }).exec();
             if (returnedRes) {
                 result.status = status;
                 result.result = returnedRes;
                 res.status(status).send(result);
             }
+            else {
+                status = 404;
+                result.status = status;
+                result.error = 'Unable to find a non-exist product';
+                res.status(status).send(result);    
+            }
         }
         // give 500 status back if there is any error
         catch(err) {
-            console.log(err);
             status = 500;
             result.status = status;
             result.error = err;
@@ -59,7 +64,7 @@ controller = {
         catch(err) {
             status = 500;
             result.status = status;
-            result.error = err;
+            result.error = 'Unable to save the product';
             res.status(status).send(result);
         }
     },
