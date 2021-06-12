@@ -7,9 +7,9 @@
 ## Local Setup
 ### Step 1: Install mongodb to your computer
 ### Step 2: install nodejs to your computer
-### Step 4: npm install
-### Step 5: npm start_db
-### Step 6: npm start
+### Step 4: ```npm install```
+### Step 5: ```npm start_db```
+### Step 6: ```npm start```
 ***Note: by default the application is running on port 3000, you can edit it as .env file***
 
 # Environment #
