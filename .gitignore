@@ -1,5 +1,5 @@
 package-lock.json
 node_modules/
 .env
-/mongo_db/data/db/*
-/mongo_db/data/log/*
+mongo_db/data/db/*
+mongo_db/log/*
